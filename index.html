@@ -60,11 +60,13 @@
   section.alert { background: var(--warn-surface); border-color: var(--warn-line); }
 
   /* Números de abertura */
-  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .tiles { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; margin-top: 16px; }
   .tile { background: var(--surface-1); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
   .tile .n { font-size: 34px; line-height: 1; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
   .tile .l { font-size: 14px; margin-top: 6px; }
   .tile .s { font-size: 13px; color: var(--text-secondary); margin-top: 6px; display: flex; gap: 6px; align-items: baseline; }
+  .tile .st { white-space: normal; }
+  @media (max-width: 380px) { .tile .n { font-size: 30px; } }
 
   /* Marca de estado: forma e rótulo, nunca só a cor */
   .st { display: inline-flex; align-items: baseline; gap: 6px; font-size: 13px; color: var(--text-secondary); white-space: nowrap; }
@@ -90,8 +92,8 @@
   .agent p { margin: 4px 0 0; font-size: 15px; }
 
   /* Barras: um só tom, ponta arredondada, valor escrito ao lado */
-  .bars { display: grid; grid-template-columns: auto 1fr auto; gap: 8px 10px; align-items: center; font-size: 14px; }
-  .bars .k { color: var(--text-secondary); white-space: nowrap; }
+  .bars { display: grid; grid-template-columns: fit-content(42%) minmax(0, 1fr) auto; gap: 8px 10px; align-items: center; font-size: 14px; }
+  .bars .k { color: var(--text-secondary); line-height: 1.25; }
   .bars .v { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
   .bars .t { height: 10px; background: var(--track); border-radius: 4px; overflow: hidden; }
   .bars .t span { display: block; height: 100%; background: var(--series-1); border-radius: 0 4px 4px 0; min-width: 2px; }
