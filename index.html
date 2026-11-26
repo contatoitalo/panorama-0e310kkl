@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="color-scheme" content="light dark">
+<title>Panorama dos agentes e sistemas · 26/11 17h</title>
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f5f5f3;
+    --surface-1: #ffffff;
+    --surface-2: #f0f0ee;
+    --line: #e2e2df;
+    --text-primary: #191919;
+    --text-secondary: #666666;
+    --series-1: #257de0;
+    --track: #e9e9e6;
+    --good: #0aac23;
+    --warning: #fbb315;
+    --serious: #f18a59;
+    --critical: #dc3c3d;
+    --warn-surface: #fff7e3;
+    --warn-line: #f1d48a;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --page: #101010;
+      --surface-1: #191919;
+      --surface-2: #232323;
+      --line: #303030;
+      --text-primary: #efefef;
+      --text-secondary: #9c9c9c;
+      --series-1: #338ced;
+      --track: #2c2c2c;
+      --warn-surface: #2a2416;
+      --warn-line: #5c4a17;
+    }
+  }
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--text-primary);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+  }
+  main { max-width: 720px; margin: 0 auto; padding: 20px 16px 48px; }
+  header { padding: 8px 2px 4px; }
+  h1 { font-size: 26px; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.01em; }
+  .stamp { color: var(--text-secondary); font-size: 14px; margin: 0; }
+  h2 { font-size: 19px; line-height: 1.25; margin: 0 0 4px; }
+  h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); margin: 22px 0 8px; font-weight: 600; }
+  p { margin: 0 0 10px; }
+  .sub { color: var(--text-secondary); font-size: 14px; margin: 0 0 14px; }
+  section { background: var(--surface-1); border: 1px solid var(--line); border-radius: 14px; padding: 18px 16px; margin-top: 16px; }
+  section.alert { background: var(--warn-surface); border-color: var(--warn-line); }
+
+  /* Números de abertura */
+  .tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+  .tile .n { font-size: 34px; line-height: 1; font-weight: 700; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .tile .l { font-size: 14px; margin-top: 6px; }
+  .tile .s { font-size: 13px; color: var(--text-secondary); margin-top: 6px; display: flex; gap: 6px; align-items: baseline; }
+
+  /* Marca de estado: forma e rótulo, nunca só a cor */
+  .st { display: inline-flex; align-items: baseline; gap: 6px; font-size: 13px; color: var(--text-secondary); white-space: nowrap; }
+  .st i { font-style: normal; font-size: 11px; line-height: 1; }
+  .st.ok i { color: var(--good); }
+  .st.wait i { color: var(--text-secondary); }
+  .st.warn i { color: var(--warning); }
+  .st.crit i { color: var(--critical); }
+
+  /* Listas */
+  ol.todo { margin: 0; padding: 0; list-style: none; counter-reset: t; }
+  ol.todo li { counter-increment: t; position: relative; padding: 12px 0 12px 34px; border-top: 1px solid var(--line); }
+  ol.todo li:first-child { border-top: 0; padding-top: 4px; }
+  ol.todo li::before { content: counter(t); position: absolute; left: 0; top: 12px; width: 24px; height: 24px; border-radius: 12px; background: var(--surface-2); color: var(--text-secondary); font-size: 13px; font-weight: 600; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+  ol.todo li:first-child::before { top: 4px; }
+  .who { display: block; color: var(--text-secondary); font-size: 13px; margin-top: 2px; }
+
+  .agent { padding: 12px 0; border-top: 1px solid var(--line); }
+  .agent:first-of-type { border-top: 0; padding-top: 2px; }
+  .agent .top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; flex-wrap: wrap; }
+  .agent .name { font-weight: 600; }
+  .agent .role { color: var(--text-secondary); font-weight: 400; }
+  .agent p { margin: 4px 0 0; font-size: 15px; }
+
+  /* Barras: um só tom, ponta arredondada, valor escrito ao lado */
+  .bars { display: grid; grid-template-columns: auto 1fr auto; gap: 8px 10px; align-items: center; font-size: 14px; }
+  .bars .k { color: var(--text-secondary); white-space: nowrap; }
+  .bars .v { font-variant-numeric: tabular-nums; font-weight: 600; text-align: right; }
+  .bars .t { height: 10px; background: var(--track); border-radius: 4px; overflow: hidden; }
+  .bars .t span { display: block; height: 100%; background: var(--series-1); border-radius: 0 4px 4px 0; min-width: 2px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: left; font-weight: 600; color: var(--text-secondary); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; padding: 0 8px 6px 0; }
+  td { padding: 9px 8px 9px 0; border-top: 1px solid var(--warn-line); vertical-align: top; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+  td small { display: block; color: var(--text-secondary); font-size: 13px; }
+
+  .note { font-size: 14px; color: var(--text-secondary); margin: 14px 0 0; }
+  footer { color: var(--text-secondary); font-size: 13px; padding: 20px 2px 0; }
+</style>
+</head>
+<body>
+<main>
+
+<header>
+  <h1>Panorama dos agentes e sistemas</h1>
+  <p class="stamp">Retrato de quinta, 26/11/2026, às 17h02. Não se atualiza sozinho.</p>
+</header>
+
+<div class="tiles">
+  <div class="tile">
+    <div class="n">85</div>
+    <div class="l">quedas por limite de uso</div>
+    <div class="s"><span class="st ok"><i>●</i>todas retomadas</span></div>
+  </div>
+  <div class="tile">
+    <div class="n">9</div>
+    <div class="l">agentes parados num erro de API</div>
+    <div class="s"><span class="st warn"><i>▲</i>sem movimento desde as 13h</span></div>
+  </div>
+  <div class="tile">
+    <div class="n">9</div>
+    <div class="l">PRs na stage hoje</div>
+    <div class="s">conta do Proteu 3</div>
+  </div>
+  <div class="tile">
+    <div class="n">2 de 5</div>
+    <div class="l">contas no limite da semana</div>
+    <div class="s">uma zera hoje às 18h59</div>
+  </div>
+</div>
+
+<section class="alert">
+  <h2>Nove agentes não voltaram</h2>
+  <p class="sub">Isto não está na conta das 85 quedas retomadas.</p>
+  <p>A última coisa na sessão de cada um é um erro de API: as credenciais do modelo estavam em resfriamento. Desde então, nenhum movimento. No canvas, sete aparecem como "pensando" e dois como "falhou".</p>
+  <table>
+    <thead><tr><th>Agente</th><th>Parou</th><th>No painel</th></tr></thead>
+    <tbody>
+      <tr><td>Forseti 5<small>Central Back · régua das decisões</small></td><td class="num">12h38</td><td>pensando</td></tr>
+      <tr><td>Perkunas 5<small>Central Back · contrato #281</small></td><td class="num">12h38</td><td>pensando</td></tr>
+      <tr><td>Merlim 5<small>Central Back · tela de modelos de mensagem</small></td><td class="num">12h41</td><td>pensando</td></tr>
+      <tr><td>Apolo 6<small>Painel · chat, ajustes depois do #1465</small></td><td class="num">12h49</td><td>pensando</td></tr>
+      <tr><td>Arcturo 5<small>Painel · vigia dos PRs barrados pelo robô</small></td><td class="num">12h50</td><td>pensando</td></tr>
+      <tr><td>Pégaso 6<small>Painel · saldo real pela API, em QA</small></td><td class="num">12h53</td><td>falhou</td></tr>
+      <tr><td>Silvano 6<small>Painel · API do site, em QA</small></td><td class="num">13h00</td><td>falhou</td></tr>
+      <tr><td>Cadmo 6<small>Painel · API externa, rotas de gestão</small></td><td class="num">13h08</td><td>pensando</td></tr>
+      <tr><td>Benten 5<small>Central Back · PR das buscas recentes</small></td><td class="num">13h12</td><td>pensando</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Pégaso 6 e Silvano 6 constam como retomados no registro de quedas, mas a sessão deles termina no erro. Os outros sete nem entraram no registro. Os coordenadores sabem: Antares 5 e Proteu 3 esperavam a cota do Opus voltar entre 17h e 17h30. Às 17h02 nenhum dos nove tinha se mexido.</p>
+</section>
+
+<section>
+  <h2>O que espera você</h2>
+  <p class="sub">Na ordem em que destrava mais coisa.</p>
+  <ol class="todo">
+    <li>Acordar os nove parados. O Proteu 3 pede, para já: trocar para o Fable 5.2 no painel do Benten 5 e do Perkunas 5.<span class="who">Proteu 3, Antares 5</span></li>
+    <li>Mergear o #1546 (tema no painel). Está aprovado pelo Wesley e pelo robô, com CI verde.<span class="who">Medeia 6, Minerva 6</span></li>
+    <li>Decidir os 4 apontamentos de baixo risco do robô no #1127 (tema do site), para ele sair do rascunho.<span class="who">Medeia 6, Hipnos 6</span></li>
+    <li>#1561 (API do chat): escolher como a trilha do histórico é gravada, A ou B. O PR fica segurado até lá.<span class="who">Cibele</span></li>
+    <li>Trem das 21h: o #1071 vai para a main sozinho ou espera o #1073 e o PR do piloto?<span class="who">Hefesto 6</span></li>
+    <li>API externa, três OKs: a resposta à cobrança do Wesley das 10h21, os tickets que ele pediu nas revisões do #1465 e do #1467, e a Bússola.<span class="who">Antares 5</span></li>
+    <li>#1469: a recusa continua valendo depois da regra nova das missões?<span class="who">Sokar 4</span></li>
+    <li>#1089 do site voltou ao rascunho sem motivo escrito. Pode sair?<span class="who">Rotina Rascunhos aprovados</span></li>
+    <li>Quem fica com o envio de push.<span class="who">Deméter 6</span></li>
+    <li>GTM: dizer quais scripts você esperava ver e passar uma conta de teste para a parte logada.<span class="who">Atlas 6</span></li>
+    <li>Gasto de tokens: escolher o que cortar.<span class="who">Quimera 3</span></li>
+  </ol>
+  <p class="note">Sem pressa: três decisões dos palpites (Órion 6), duas das missões com padrão valendo (Selene 6) e as do cupom em massa (Sobek 3).</p>
+</section>
+
+<section>
+  <h2>Quedas de hoje</h2>
+  <p class="sub">85 registros, das 9h43 às 13h10. Todos por limite de uso, todos retomados sozinhos pelo app. 16 agentes atingidos.</p>
+
+  <h3>Por hora</h3>
+  <div class="bars" role="img" aria-label="Quedas por hora: 12 às 9h, 25 às 10h, 13 às 11h, 24 às 12h, 11 às 13h">
+    <span class="k">9h</span><span class="t" title="9h: 12 quedas"><span style="width:48%"></span></span><span class="v">12</span>
+    <span class="k">10h</span><span class="t" title="10h: 25 quedas"><span style="width:100%"></span></span><span class="v">25</span>
+    <span class="k">11h</span><span class="t" title="11h: 13 quedas"><span style="width:52%"></span></span><span class="v">13</span>
+    <span class="k">12h</span><span class="t" title="12h: 24 quedas"><span style="width:96%"></span></span><span class="v">24</span>
+    <span class="k">13h</span><span class="t" title="13h: 11 quedas"><span style="width:44%"></span></span><span class="v">11</span>
+  </div>
+
+  <h3>Por projeto</h3>
+  <div class="bars" role="img" aria-label="Quedas por projeto: 53 no Painel, 27 na Central Back, 5 no projeto pessoal">
+    <span class="k">Painel (Filament)</span><span class="t" title="Painel: 53 quedas"><span style="width:100%"></span></span><span class="v">53</span>
+    <span class="k">Central Back</span><span class="t" title="Central Back: 27 quedas"><span style="width:51%"></span></span><span class="v">27</span>
+    <span class="k">Projeto pessoal</span><span class="t" title="Projeto pessoal: 5 quedas"><span style="width:9.4%"></span></span><span class="v">5</span>
+  </div>
+
+  <p class="note">Mais atingidos: Proteu 3 (12), Juno 6 (10), Antares 5 (9), Quíron 6 (9), Silvano 6 (7). Nos dias 22, 23 e 24 foram 47, 53 e 47. No dia 25, nenhuma.</p>
+  <p class="note">A única que tinha parado de verdade era a Minerva, do projeto pessoal. Foi retomada e voltou a rodar: última atividade às 16h50.</p>
+</section>
+
+<section>
+  <h2>Painel (Filament)</h2>
+  <p class="sub">Vigias rearmados depois das quedas por Antares 5, Medeia 6 e Hefesto 6.</p>
+
+  <div class="agent">
+    <div class="top"><span class="name">Antares 5 <span class="role">· coordena a API externa</span></span><span class="st ok"><i>●</i>ativo às 16h54</span></div>
+    <p>O #1465 entrou na stage às 14h04 e o #1467 às 15h03. Sobram o #1469 e o #1461, aprovados pelo robô e segurados por decisão sua. Cinco vigias armados.</p>
+  </div>
+  <div class="agent">
+    <div class="top"><span class="name">Hefesto 6 <span class="role">· push</span></span><span class="st ok"><i>●</i>ativo às 16h55</span></div>
+    <p>O robô pediu mudanças nos três PRs abertos: 13 pontos no #1073 do site, 14 no #1553 e 3 no #1557. A triagem está feita e o conserto esperava a cota do Opus, prevista para as 17h02. O #1071 já está na stage do site.</p>
+  </div>
+  <div class="agent">
+    <div class="top"><span class="name">Medeia 6 <span class="role">· tema na hora</span></span><span class="st wait"><i>○</i>quieta desde 15h30</span></div>
+    <p>O #1546 (painel) está aprovado e espera o merge. O #1127 (site) segue em rascunho, provado e com tudo verde.</p>
+  </div>
+  <div class="agent">
+    <div class="top"><span class="name">Quíron 6 <span class="role">· trava de IP nos tokens</span></span><span class="st ok"><i>●</i>ativo às 16h14</span></div>
+    <p>O #1549 saiu do rascunho às 16h12 e o Wesley foi avisado. Precisa da aprovação do core-money.</p>
+  </div>
+  <div class="agent">
+    <div class="top"><span class="name">Cérbero <span class="role">· roda da sorte</span></span><span class="st ok"><i>●</i>ativo às 17h02</span></div>
+    <p>A API de rodas está completa, com a suíte inteira passando e dois agentes de QA em cima. O #1551 espera o ok da PO.</p>
+  </div>
+  <div class="agent">
+    <div class="top"><span class="name">Cibele <span class="role">· API do chat</span></span><span class="st ok"><i>●</i>ativa às 17h00</span></div>
+    <p>O #1561 tem a prova de QA e a CI rodando. Duas conversas do robô seguem abertas e o PR está segurado esperando a sua decisão.</p>
+  </div>
+  <div class="agent">
+    <div class="top"><span class="name">Órion 6 <span class="role">· palpites na API externa</span></span><span class="st ok"><i>●</i>ativo às 17h01</span></div>
+    <p>Duas das quatro frentes do QA terminaram sem achado crítico. Um conserto está em andamento, com teste.</p>
+  </div>
+  <div class="agent">
+    <div class="top"><span class="name">Selene 6 <span class="role">· missões pela API</span></span><span class="st ok"><i>●</i>ativa às 16h25</span></div>
+    <p>Etapa 2 de 5. A etapa 1 fechou com 20 commits e os testes passando na stage de hoje. Nada foi para o GitHub ainda.</p>
+  </div>
+  <div class="agent">
+    <div class="top"><span class="name">Sobek 3 <span class="role">· cupom em massa</span></span><span class="st ok"><i>●</i>ativo às 16h59</span></div>
+    <p>O primeiro conserto foi confirmado e o dinheiro ficou certo. O segundo, dos avisos ao jogador, está em andamento. O #1437 e o #1442 seguem vigiados.</p>
+  </div>
+  <div class="agent">
+    <div class="top"><span class="name">Sokar 4 <span class="role">· teto da API</span></span><span class="st wait"><i>○</i>quieto desde 12h34</span></div>
+    <p>O #1469 está aprovado pelo robô e segurado de propósito, esperando a sua decisão.</p>
+  </div>
+  <p class="note">Parados nesta área: Arcturo 5, Apolo 6, Cadmo 6, Pégaso 6 e Silvano 6.</p>
+</section>
+
+<section>
+  <h2>Central Back</h2>
+  <div class="agent">
+    <div class="top"><span class="name">Proteu 3 <span class="role">· coordenador</span></span><span class="st ok"><i>●</i>ativo às 16h54</span></div>
+    <p>Nove PRs na stage hoje. O #1071 do site entrou às 15h42. O par dele, o #1073, perdeu as aprovações por uma regra do GitHub e espera o Wesley de novo. O #1442 e o #1437 seguem com o Wesley, já validados.</p>
+  </div>
+  <p class="note">Parados nesta área: Benten 5, Perkunas 5, Merlim 5 e Forseti 5. O guardião do coordenador roda a cada 5 minutos e a última checagem veio sem novidade.</p>
+</section>
+
+<section>
+  <h2>Site (Front-end)</h2>
+  <div class="agent">
+    <div class="top"><span class="name">Atlas 6 <span class="role">· GTM de uma casa</span></span><span class="st wait"><i>○</i>quieto desde 15h58</span></div>
+    <p>Relatório entregue às 15h02: o GTM publicado tem uma tag só, e ela carrega depois do primeiro toque. A reanálise ainda não aparece na sessão dele.</p>
+  </div>
+  <div class="agent">
+    <div class="top"><span class="name">Quimera <span class="role">· boilerplate</span></span><span class="st wait"><i>○</i>quieta desde 15h57</span></div>
+    <p>O pacote do site novo foi montado e enviado. O lado do back de que ele depende ainda não está em produção.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Painel do dono</h2>
+  <div class="agent">
+    <div class="top"><span class="name">Sobek 2 <span class="role">· banners da LikeBet</span></span><span class="st ok"><i>●</i>ativo às 17h01</span></div>
+    <p>No ar: três banners novos da marca e a home reorganizada, com Mais Curtidos no topo. Conferido no desktop e no celular. A versão anterior da home ficou guardada.</p>
+  </div>
+</section>
+
+<section>
+  <h2>Cota e gasto</h2>
+  <div class="agent">
+    <div class="top"><span class="name">Quimera 3 <span class="role">· gasto de tokens</span></span><span class="st wait"><i>○</i>quieta desde 13h25</span></div>
+    <p>Diagnóstico pronto: não é laço, é volume. São uns 25 agentes juntos o dia inteiro, com conversas de quase 1 milhão de tokens e muitos subagentes. O vigia do proxy roda a cada minuto.</p>
+  </div>
+  <div class="agent">
+    <div class="top"><span class="name">Fortuna <span class="role">· proxy</span></span><span class="st wait"><i>○</i>entregou às 14h15</span></div>
+    <p>Um resfriamento preso só no Fable 5.2 travava as respostas. O proxy foi reiniciado e o vigia agora testa Opus e Fable separados. Proxy no ar, com 20 modelos.</p>
+  </div>
+
+  <h3>Uso da semana por conta</h3>
+  <div class="bars" role="img" aria-label="Uso semanal por conta: conta 1 em 100%, conta 2 em 9%, conta 3 em 63%, conta 4 em 100%, conta 5 em 17%">
+    <span class="k">Conta 1</span><span class="t" title="Conta 1: 100% da semana"><span style="width:100%"></span></span><span class="v">100%</span>
+    <span class="k">Conta 2</span><span class="t" title="Conta 2: 9% da semana"><span style="width:9%"></span></span><span class="v">9%</span>
+    <span class="k">Conta 3</span><span class="t" title="Conta 3: 63% da semana"><span style="width:63%"></span></span><span class="v">63%</span>
+    <span class="k">Conta 4</span><span class="t" title="Conta 4: 100% da semana"><span style="width:100%"></span></span><span class="v">100%</span>
+    <span class="k">Conta 5</span><span class="t" title="Conta 5: 17% da semana"><span style="width:17%"></span></span><span class="v">17%</span>
+  </div>
+  <p class="note">A conta 4 zera hoje às 18h59 e a conta 1 no domingo, 29/11, às 23h59. A conta 5 está com 81% da janela de 5 horas, que zera às 18h10. Sobra 0,8 conta nesta semana, e o monitor diz para não cortar nenhuma.</p>
+</section>
+
+<section>
+  <h2>Máquina</h2>
+  <p class="sub">Pico de memória às 14h14: 28,08 GB, uma vez e meia o normal (18,68 GB).</p>
+  <div class="bars" role="img" aria-label="Memória no pico: 17,28 GB em servidores dos agentes, 7,61 GB em agentes, 2,18 GB em navegadores, 1 GB no app">
+    <span class="k">Servidores dos agentes</span><span class="t" title="Servidores dos agentes: 17,28 GB"><span style="width:100%"></span></span><span class="v">17,3 GB</span>
+    <span class="k">Agentes</span><span class="t" title="Agentes: 7,61 GB"><span style="width:44%"></span></span><span class="v">7,6 GB</span>
+    <span class="k">Navegadores</span><span class="t" title="Navegadores: 2,18 GB"><span style="width:12.6%"></span></span><span class="v">2,2 GB</span>
+    <span class="k">O app</span><span class="t" title="O app: 1 GB"><span style="width:5.8%"></span></span><span class="v">1,0 GB</span>
+  </div>
+  <p class="note">Naquela hora estavam abertos 8 projetos, 126 painéis e 65 agentes.</p>
+</section>
+
+<section>
+  <h2>Rotinas</h2>
+  <div class="agent">
+    <div class="top"><span class="name">Rascunhos aprovados <span class="role">· Painel</span></span><span class="st ok"><i>●</i>sem novidade</span></div>
+    <p>De hora em hora, das 8h às 20h.</p>
+  </div>
+  <div class="agent">
+    <div class="top"><span class="name">Guardião do coordenador <span class="role">· Central Back</span></span><span class="st ok"><i>●</i>sem novidade</span></div>
+    <p>A cada 5 minutos.</p>
+  </div>
+  <p class="note">Na caixa há 4 itens esperando você: o #1089 do site, dois avisos de que o Proteu 3 estava parado (ele já voltou) e uma falha do guardião às 12h05.</p>
+</section>
+
+<footer>
+  Colhido às 17h02 do estado do canvas, do registro de quedas e do fim da sessão de cada agente.
+</footer>
+
+</main>
+</body>
+</html>
